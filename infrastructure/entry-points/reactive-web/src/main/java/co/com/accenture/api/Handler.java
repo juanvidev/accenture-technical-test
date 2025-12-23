@@ -4,6 +4,8 @@ import co.com.accenture.api.dto.request.CreateFranchiseRequestDTO;
 import co.com.accenture.api.dto.request.CreateProductRequestDTO;
 import co.com.accenture.api.dto.request.CreateSubsidiaryRequestDTO;
 import co.com.accenture.api.dto.request.UpdateProductStockRequestDTO;
+import co.com.accenture.api.dto.response.GenericResponse;
+import co.com.accenture.api.dto.response.MaxStockProductsResponseDTO;
 import co.com.accenture.api.mapper.FranchiseMapper;
 import co.com.accenture.api.mapper.ProductMapper;
 import co.com.accenture.api.mapper.SubsidiaryMapper;
@@ -13,11 +15,16 @@ import co.com.accenture.usecase.franchise.FranchiseUseCase;
 import co.com.accenture.usecase.product.ProductUseCase;
 import co.com.accenture.usecase.subsidiary.SubsidiaryUseCase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -87,5 +94,28 @@ public class Handler {
                 .flatMap(franchise -> ServerResponse.status(HttpStatus.OK).build())
                 .doOnError(error -> System.err.println("[Handler] listenUpdateProductStock - Error: " + error.getMessage()))
                 .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateProductStock - Product stock updated: " + entity));
+    }
+
+    public Mono<ServerResponse> listenGetProductWithMostStock(ServerRequest serverRequest) {
+
+        String idFranchisePath = serverRequest.pathVariable("id");
+
+        return productUseCase.getProductWithMostStock(idFranchisePath)
+                .map(productMapper::toResponseMaxStock)
+                .collectList()
+                .flatMap(products -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(GenericResponse
+                                .builder()
+                                .success(true)
+                                .data(products)
+                                .timestamp(LocalDateTime.now())
+                                .message("Products with most stock found")
+                                .build()
+                        )
+                )
+                .doOnError(error -> System.err.println("[Handler] listenGetProductWithMostStock - Error: " + error.getMessage()))
+                .doOnSuccess(entity -> System.out.println("[Handler] listenGetProductWithMostStock - Products with most stock found: " + entity));
+
     }
 }

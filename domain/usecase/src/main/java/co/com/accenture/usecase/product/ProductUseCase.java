@@ -4,8 +4,12 @@ import co.com.accenture.model.exception.BusinessException;
 import co.com.accenture.model.franchise.Franchise;
 import co.com.accenture.model.franchise.gateways.FranchiseRepository;
 import co.com.accenture.model.product.Product;
+import co.com.accenture.model.product.ProductWithSubsidiary;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Comparator;
 
 @RequiredArgsConstructor
 public class ProductUseCase {
@@ -71,6 +75,33 @@ public class ProductUseCase {
 
                     return franchiseRepository.save(franchise);
                 });
+    }
+
+    public Flux<ProductWithSubsidiary> getProductWithMostStock(String idFranchise) {
+
+        return franchiseRepository.findById(idFranchise)
+                .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found for the provided ID.")))
+                .flatMapMany(franchise ->
+                     Flux.fromIterable(franchise.getSubsidiaries())
+                        .flatMap(subsidiary ->
+                            Flux.fromIterable(subsidiary.getProducts())
+                                .collectList()
+                                .flatMapMany(products ->
+                                        products.stream()
+                                                .max(Comparator.comparing(Product::getStock))
+                                                .map(Flux::just)
+                                                .orElseGet(Flux::empty)
+                                )
+                                .map(product -> ProductWithSubsidiary
+                                        .builder()
+                                        .productId(product.getId())
+                                        .productName(product.getName())
+                                        .stock(product.getStock())
+                                        .subsidiaryName(subsidiary.getName())
+                                        .build()
+                                )
+                        )
+                );
     }
 
 }

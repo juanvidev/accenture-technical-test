@@ -1,7 +1,10 @@
 package co.com.accenture.api.mapper;
 
 import co.com.accenture.api.dto.request.CreateProductRequestDTO;
+import co.com.accenture.api.dto.response.CreateProductResponseDTO;
+import co.com.accenture.api.dto.response.MaxStockProductsResponseDTO;
 import co.com.accenture.model.product.Product;
+import co.com.accenture.model.product.ProductWithSubsidiary;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,6 +15,10 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
+
+    CreateProductResponseDTO toResponse(Product product);
+
+    MaxStockProductsResponseDTO toResponseMaxStock(ProductWithSubsidiary product);
 
     @Mapping(target = "id", ignore = true)
     Product toDomain(CreateProductRequestDTO createProductRequestDTO);

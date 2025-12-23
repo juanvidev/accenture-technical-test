@@ -3,7 +3,6 @@ package co.com.accenture.api;
 import co.com.accenture.api.docs.CreateFranchiseDocs;
 import co.com.accenture.api.docs.CreateSubsidiaryDocs;
 import co.com.accenture.api.util.Routes;
-import co.com.accenture.model.franchise.Franchise;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
@@ -51,8 +50,8 @@ public class RouterRest {
                 )
                 .path(Routes.PRODUCT, builder -> builder
                         .POST("/{franchiseId}/{subsidiaryId}", franchiseHandler::listenSaveProduct)
-                        //TOOO: Add endpoint for updating product stock
                         .POST("/{franchiseId}/{subsidiaryId}/update-stock", franchiseHandler::listenUpdateProductStock)
+                        .GET("/mostStock/{id}", franchiseHandler::listenGetProductWithMostStock)
                 )
                 .build();
     }
