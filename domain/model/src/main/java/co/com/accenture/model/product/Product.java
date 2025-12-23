@@ -10,7 +10,8 @@ import java.util.UUID;
 public class Product {
     private String id;
     private String name;
-    private Integer stock;
+    @Builder.Default
+    private Integer stock = 0;
 
     public Product() {
         this.id = UUID.randomUUID().toString();

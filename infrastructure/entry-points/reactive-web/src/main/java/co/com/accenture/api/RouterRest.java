@@ -28,7 +28,9 @@ public class RouterRest {
                 .path(Routes.FRANCHISE, builder -> builder
                         .POST("", franchiseHandler::listenSaveFranchise)
 //                        .GET("", userHandler::listenExistsByEmailAndDocumentId)
-//                        .POST("/emails", userHandler::listenGetAllByEmail)
+                )
+                .path(Routes.SUBSIDIARY, builder -> builder
+                        .POST("/{id}", franchiseHandler::listenSaveSubsidiary)
                 )
                 .build();
     }

@@ -2,6 +2,7 @@ package co.com.accenture.config;
 
 import co.com.accenture.model.franchise.gateways.FranchiseRepository;
 import co.com.accenture.usecase.franchise.FranchiseUseCase;
+import co.com.accenture.usecase.subsidiary.SubsidiaryUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,5 +20,10 @@ public class UseCasesConfig {
             FranchiseRepository franchiseRepository
     ) {
         return new FranchiseUseCase(franchiseRepository);
+    }
+
+    @Bean
+    SubsidiaryUseCase subsidiaryUseCase (FranchiseRepository franchiseRepository) {
+        return new SubsidiaryUseCase(franchiseRepository);
     }
 }
