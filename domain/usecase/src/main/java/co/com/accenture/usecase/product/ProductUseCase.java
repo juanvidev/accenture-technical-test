@@ -42,7 +42,35 @@ public class ProductUseCase {
                     subsidiary.getProducts().add(productNew);
                     return franchiseRepository.save(franchise);
                 });
-
-
     }
+
+    public Mono<Franchise> updateProductStock(String idFranchise, String idSubsidiary, String productName, Integer stockToAdd) {
+        return franchiseRepository.findById(idFranchise)
+                .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found for the provided ID.")))
+                .flatMap(franchise -> {
+                    var subsidiaryOpt = franchise.getSubsidiaries().stream()
+                            .filter(subsidiary -> subsidiary.getId().equalsIgnoreCase(idSubsidiary))
+                            .findFirst();
+
+                    if (subsidiaryOpt.isEmpty()) {
+                        return Mono.error(new BusinessException("BSS_004", "Subsidiary not found for the provided ID."));
+                    }
+
+                    var subsidiary = subsidiaryOpt.get();
+
+                    var productOpt = subsidiary.getProducts().stream()
+                            .filter(p -> p.getName().equalsIgnoreCase(productName))
+                            .findFirst();
+
+                    if (productOpt.isEmpty()) {
+                        return Mono.error(new BusinessException("BSS_006", "Product not found in subsidiary."));
+                    }
+
+                    var product = productOpt.get();
+                    product.setStock(stockToAdd);
+
+                    return franchiseRepository.save(franchise);
+                });
+    }
+
 }

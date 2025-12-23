@@ -3,6 +3,7 @@ package co.com.accenture.api;
 import co.com.accenture.api.dto.request.CreateFranchiseRequestDTO;
 import co.com.accenture.api.dto.request.CreateProductRequestDTO;
 import co.com.accenture.api.dto.request.CreateSubsidiaryRequestDTO;
+import co.com.accenture.api.dto.request.UpdateProductStockRequestDTO;
 import co.com.accenture.api.mapper.FranchiseMapper;
 import co.com.accenture.api.mapper.ProductMapper;
 import co.com.accenture.api.mapper.SubsidiaryMapper;
@@ -71,5 +72,20 @@ public class Handler {
                 .flatMap(franchise -> ServerResponse.status(HttpStatus.CREATED).build())
                 .doOnError(error -> System.err.println("[Handler] listenSaveProduct - Error: " + error.getMessage()))
                 .doOnSuccess(entity -> System.out.println("[Handler] listenSaveProduct - Product saved: " + entity));
+    }
+
+    public Mono<ServerResponse> listenUpdateProductStock(ServerRequest serverRequest) {
+
+        String idFranchisePath = serverRequest.pathVariable("franchiseId");
+        String idSubsidiaryPath = serverRequest.pathVariable("subsidiaryId");
+
+        return serverRequest.bodyToMono(UpdateProductStockRequestDTO.class)
+                .doOnNext(dto -> System.out.println("[Handler] listenUpdateProductStock - Received payload"))
+                .flatMap(validatorUtil::validate)
+                .flatMap(dto -> productUseCase.updateProductStock(idFranchisePath, idSubsidiaryPath, dto.productName(), dto.stock()))
+                .doOnNext(entity -> System.out.println("[Handler] listenUpdateProductStock  - Product stock updated: " + entity))
+                .flatMap(franchise -> ServerResponse.status(HttpStatus.OK).build())
+                .doOnError(error -> System.err.println("[Handler] listenUpdateProductStock - Error: " + error.getMessage()))
+                .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateProductStock - Product stock updated: " + entity));
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Franchises Microservice API",
+                title = "Franchises API",
                 version = "1.2",
                 description = "This API handles the management of franchises applicants",
                 contact = @Contact(
