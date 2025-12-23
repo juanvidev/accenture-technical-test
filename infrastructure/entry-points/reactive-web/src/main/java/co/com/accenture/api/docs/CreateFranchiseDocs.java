@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Schema(description = "Documentation for create Franchises endpoint")
-public class CreateUserDocs {
+public class CreateFranchiseDocs {
 
     @Operation(
         operationId = "createFranchise",

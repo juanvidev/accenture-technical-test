@@ -1,5 +1,9 @@
 package co.com.accenture.api.docs;
 
+import co.com.accenture.api.dto.request.CreateSubsidiaryRequestDTO;
+import co.com.accenture.api.dto.response.CreateFranchiseResponseDTO;
+import co.com.accenture.api.dto.response.CreateSubsidiaryResponseDTO;
+import co.com.accenture.api.exception.BussinessResponseException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,21 +14,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
 @Component
-@Schema(description = "Documentation for search a user by email and document id endpoint")
-public class ExistsByEmailAndDocumentIdDocs {
+@Schema(name = "CreateSubsidiaryDocs", description = "Documentation for creating a subsidiary")
+public class CreateSubsidiaryDocs {
 
     @Operation(
-        operationId = "existsByEmailAndDocumentId",
-        summary = "Get a user by email and document id",
-        description = "Creates a new user in the system",
-        tags = {"Users"}
+        operationId = "createSubsidiary",
+        summary = "Create a new subsidiary",
+        description = "Creates a new subsidiary provided id of a franchise",
+        tags = {"Subsidiaries"}
     )
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
-            description = "User found",
+            responseCode = "201",
+            description = "Subsidiary created successfully",
             content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = CreateUserResponseDTO.class))
+                schema = @Schema(implementation = CreateSubsidiaryRequestDTO.class))
         ),
         @ApiResponse(
             responseCode = "400",
@@ -40,12 +44,12 @@ public class ExistsByEmailAndDocumentIdDocs {
         ),
         @ApiResponse(
             responseCode = "409",
-            description = "User not found",
+            description = "Subsidiary already exists",
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = BussinessResponseException.class))
         )
     })
-    public Mono<CreateUserResponseDTO> existsByEmailAndDocumentId(@RequestParam("email")  String email, @RequestParam("documentid") String documentId){
+    public Mono<CreateSubsidiaryResponseDTO> createSubsidiary(@RequestParam("id")  String idFranchise){
         return Mono.empty();
     }
 }
