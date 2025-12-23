@@ -3,7 +3,8 @@
 Resumen
 -------
 Proyecto creado como prueba técnica para Accenture. Está diseñado siguiendo la arquitectura hexagonal (ports & adapters) 
-para mostrar la separación clara entre dominio, lógica de aplicación y detalles de infraestructura.
+para mostrar la separación clara entre dominio, lógica de aplicación y detalles de infraestructura, basado en el [plugin](https://bancolombia.github.io/scaffold-clean-architecture/docs/intro) 
+de Bancolombia.
 
 Arquitectura (Hexagonal)
 ------------------------
@@ -67,12 +68,31 @@ docker run -d --name dynamodb-local -p 8000:8000 amazon/dynamodb-local
 
 ```bash
 aws dynamodb create-table \
-  --table-name Franchises \
-  --attribute-definitions AttributeName=id,AttributeType=S \
-  --key-schema AttributeName=id,KeyType=HASH \
-  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+  --table-name franchises \
+  --attribute-definitions \
+    AttributeName=id,AttributeType=S \
+    AttributeName=name,AttributeType=S \
+  --key-schema \
+    AttributeName=id,KeyType=HASH \
+  --global-secondary-indexes '[
+    {
+      "IndexName": "franchise-name-index",
+      "KeySchema": [
+        { "AttributeName": "name", "KeyType": "HASH" }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ]' \
+  --provisioned-throughput \
+    ReadCapacityUnits=5,WriteCapacityUnits=5 \
   --endpoint-url http://localhost:8000 \
-  --region us-west-2
+  --region us-east-1
 ```
 
 3) Crear la tabla `Franchises` (opción B: usando `amazon/aws-cli` en Docker, útil si no tienes AWS CLI local):
@@ -81,9 +101,24 @@ aws dynamodb create-table \
 # En macOS, usamos host.docker.internal para que el contenedor aws-cli alcance el DynamoDB que corre en el host
 docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon/aws-cli \
   dynamodb create-table \
-    --table-name Franchises \
+    --table-name franchises \
     --attribute-definitions AttributeName=id,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH \
+      --global-secondary-indexes '[
+        {
+          "IndexName": "franchise-name-index",
+          "KeySchema": [
+            { "AttributeName": "name", "KeyType": "HASH" }
+          ],
+          "Projection": {
+            "ProjectionType": "ALL"
+          },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      ]' \    
     --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
     --endpoint-url http://host.docker.internal:8000 \
     --region us-east-1
@@ -92,7 +127,7 @@ docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon
 4) Verificar tablas existentes (AWS CLI local):
 
 ```bash
-aws dynamodb list-tables --endpoint-url http://localhost:8000 --region us-west-2
+aws dynamodb list-tables --endpoint-url http://localhost:8000 --region us-east-1
 ```
 
 Notas sobre el esquema de la tabla `Franchises`:
