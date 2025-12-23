@@ -42,6 +42,9 @@ public class RouterRest {
                 .path(Routes.SUBSIDIARY, builder -> builder
                         .POST("/{id}", franchiseHandler::listenSaveSubsidiary)
                 )
+                .path(Routes.PRODUCT, builder -> builder
+                        .POST("/{franchiseId}/{subsidiaryId}", franchiseHandler::listenSaveProduct)
+                )
                 .build();
     }
 }

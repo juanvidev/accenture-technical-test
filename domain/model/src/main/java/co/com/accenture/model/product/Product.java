@@ -6,18 +6,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
 public class Product {
-    private String id;
+
+    @Builder.Default
+    private String id = UUID.randomUUID().toString();
+
     private String name;
+
     @Builder.Default
     private Integer stock = 0;
-
-    public Product() {
-        this.id = UUID.randomUUID().toString();
-    }
-
-    public static class ProductBuilder {
-        private String id = UUID.randomUUID().toString();
-    }
 }
