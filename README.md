@@ -1,4 +1,4 @@
-# prueba-accenture — Prueba técnica (Accenture)
+# Prueba técnica (Accenture)
 
 Resumen
 -------
