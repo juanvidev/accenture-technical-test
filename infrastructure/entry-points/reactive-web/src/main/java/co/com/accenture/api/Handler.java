@@ -5,27 +5,23 @@ import co.com.accenture.api.dto.request.CreateProductRequestDTO;
 import co.com.accenture.api.dto.request.CreateSubsidiaryRequestDTO;
 import co.com.accenture.api.dto.request.UpdateProductStockRequestDTO;
 import co.com.accenture.api.dto.response.GenericResponse;
-import co.com.accenture.api.dto.response.MaxStockProductsResponseDTO;
+import co.com.accenture.api.dto.response.ListFranchisesResponseDTO;
 import co.com.accenture.api.mapper.FranchiseMapper;
 import co.com.accenture.api.mapper.ProductMapper;
 import co.com.accenture.api.mapper.SubsidiaryMapper;
 import co.com.accenture.api.util.ValidatorUtil;
-import co.com.accenture.model.product.Product;
 import co.com.accenture.usecase.franchise.FranchiseUseCase;
 import co.com.accenture.usecase.product.ProductUseCase;
 import co.com.accenture.usecase.subsidiary.SubsidiaryUseCase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -41,14 +37,22 @@ public class Handler {
     public Mono<ServerResponse> listenSaveFranchise(ServerRequest serverRequest) {
 
         return serverRequest.bodyToMono(CreateFranchiseRequestDTO.class)
-                .doOnNext(dto -> System.out.println("[Handler] listenSaveUser - Received payload"))
                 .map(franchiseMapper::toDomain)
                 .flatMap(validatorUtil::validate)
                 .flatMap(franchiseUseCase::saveFranchise)
-                .doOnNext(entity -> System.out.println("[Handler] listenSaveUser  - User saved: " + entity))
-                .flatMap(user -> ServerResponse.status(HttpStatus.CREATED).build())
-                .doOnError(error -> System.err.println("[Handler] listenSaveUser - Error: " + error.getMessage()))
-                .doOnSuccess(entity -> System.out.println("[Handler] listenSaveUser - User saved: " + entity));
+                .doOnNext(entity -> System.out.println("[Handler] listenSaveFranchise  - Franchise saved: " + entity.getName()))
+                .flatMap(franchise -> ServerResponse.status(HttpStatus.CREATED)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(
+                                GenericResponse
+                                    .builder()
+                                    .success(true)
+                                    .data(franchise)
+                                    .timestamp(LocalDateTime.now())
+                                    .message("Franchise created")
+                                    .build()
+                ))
+                .doOnError(error -> System.err.println("[Handler] listenSaveFranchise - Error: " + error.getMessage()));
     }
 
     public Mono<ServerResponse> listenSaveSubsidiary(ServerRequest serverRequest) {
@@ -61,9 +65,20 @@ public class Handler {
                 .flatMap(validatorUtil::validate)
                 .flatMap(subsidiary -> subsidiaryUseCase.saveSubsidiary(idFromPath, subsidiary))
                 .doOnNext(entity -> System.out.println("[Handler] listenSaveSubsidiary  - Subsidiary saved: " + entity))
-                .flatMap(user -> ServerResponse.status(HttpStatus.CREATED).build())
+                .flatMap(sub ->
+                        ServerResponse.status(HttpStatus.CREATED)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(
+                                        GenericResponse
+                                                .builder()
+                                                .success(true)
+                                                .data(sub)
+                                                .timestamp(LocalDateTime.now())
+                                                .message("Subsidiary created")
+                                                .build()
+                )
                 .doOnError(error -> System.err.println("[Handler] listenSaveSubsidiary - Error: " + error.getMessage()))
-                .doOnSuccess(entity -> System.out.println("[Handler] listenSaveSubsidiary - Subsidiary saved: " + entity));
+                .doOnSuccess(entity -> System.out.println("[Handler] listenSaveSubsidiary - Subsidiary saved: " + entity)));
     }
 
     public Mono<ServerResponse> listenSaveProduct(ServerRequest serverRequest) {
@@ -77,9 +92,20 @@ public class Handler {
                 .flatMap(validatorUtil::validate)
                 .flatMap(product -> productUseCase.saveProduct(idFranchisePath, idSubsidiaryPath, product))
                 .doOnNext(entity -> System.out.println("[Handler] listenSaveProduct  - Product saved: " + entity))
-                .flatMap(franchise -> ServerResponse.status(HttpStatus.CREATED).build())
+                .flatMap(product ->
+                        ServerResponse.status(HttpStatus.CREATED)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(
+                                        GenericResponse
+                                                .builder()
+                                                .success(true)
+                                                .data(product)
+                                                .timestamp(LocalDateTime.now())
+                                                .message("Product created")
+                                                .build()
+                )
                 .doOnError(error -> System.err.println("[Handler] listenSaveProduct - Error: " + error.getMessage()))
-                .doOnSuccess(entity -> System.out.println("[Handler] listenSaveProduct - Product saved: " + entity));
+                .doOnSuccess(entity -> System.out.println("[Handler] listenSaveProduct - Product saved: " + entity)));
     }
 
     public Mono<ServerResponse> listenUpdateProductStock(ServerRequest serverRequest) {
@@ -129,9 +155,20 @@ public class Handler {
                 .flatMap(validatorUtil::validate)
                 .flatMap(franchise -> franchiseUseCase.updateFranchise(idFromPath, franchise))
                 .doOnNext(entity -> System.out.println("[Handler] listenUpdateFranchise  - Franchise updated: " + entity))
-                .flatMap(user -> ServerResponse.status(HttpStatus.OK).build())
+                .flatMap(fra ->
+                        ServerResponse.status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(
+                                        GenericResponse
+                                                .builder()
+                                                .success(true)
+                                                .data(fra)
+                                                .timestamp(LocalDateTime.now())
+                                                .message("Franchise updated")
+                                                .build()
+                )
                 .doOnError(error -> System.err.println("[Handler] listenUpdateFranchise - Error: " + error.getMessage()))
-                .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateFranchise - Franchise updated: " + entity));
+                .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateFranchise - Franchise updated: " + entity)));
     }
 
     public Mono<ServerResponse> listenUpdateSubsidiary(ServerRequest serverRequest) {
@@ -144,28 +181,27 @@ public class Handler {
                 .flatMap(validatorUtil::validate)
                 .flatMap(subsidiary -> subsidiaryUseCase.updateSubsidiary(idFranchisePath, idSubsidiaryPath, subsidiary))
                 .doOnNext(entity -> System.out.println("[Handler] listenUpdateSubsidiary  - Subsidiary updated: " + entity))
-                .flatMap(user -> ServerResponse.status(HttpStatus.OK).build())
+                .flatMap(sub ->
+                        ServerResponse.status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(
+                                        GenericResponse
+                                                .builder()
+                                                .success(true)
+                                                .data(sub)
+                                                .timestamp(LocalDateTime.now())
+                                                .message("Subsidiary updated")
+                                                .build()
+                )
                 .doOnError(error -> System.err.println("[Handler] listenUpdateSubsidiary - Error: " + error.getMessage()))
-                .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateSubsidiary - Subsidiary updated: " + entity));
+                .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateSubsidiary - Subsidiary updated: " + entity)));
     }
 
     public Mono<ServerResponse> listenGetAllFranchises(ServerRequest serverRequest) {
 
-        return franchiseUseCase.getAllFranchises()
-                .map(franchiseMapper::toResponseList)
-                .collectList()
-                .flatMap(
-                        franchises -> ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(GenericResponse
-                                        .builder()
-                                        .success(true)
-                                        .data(franchises)
-                                        .timestamp(LocalDateTime.now())
-                                        .message("Franchises found")
-                                        .build()
-                                )
-                );
+        return ServerResponse.ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(franchiseUseCase.getAllFranchises(), ListFranchisesResponseDTO.class);
     }
 
 }

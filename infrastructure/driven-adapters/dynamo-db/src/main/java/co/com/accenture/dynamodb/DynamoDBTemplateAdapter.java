@@ -13,6 +13,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,7 @@ public class DynamoDBTemplateAdapter
     @Override
     public Flux<Franchise> findAll() {
         return Flux.from(table.scan().items())
+//                .delayElements(Duration.ofSeconds(1))
                 .map(entity -> mapper.map(entity, Franchise.class));
     }
 

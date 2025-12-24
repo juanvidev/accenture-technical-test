@@ -16,7 +16,7 @@ public class ProductUseCase {
 
     private final FranchiseRepository franchiseRepository;
 
-    public Mono<Franchise> saveProduct(String idFranchise, String idSubsidiary, Product product) {
+    public Mono<Product> saveProduct(String idFranchise, String idSubsidiary, Product product) {
         return franchiseRepository.findById(idFranchise)
                 .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found for the provided ID.")))
                 .flatMap(franchise -> {
@@ -43,7 +43,8 @@ public class ProductUseCase {
                             .build();
 
                     subsidiary.getProducts().add(productNew);
-                    return franchiseRepository.save(franchise);
+                    return franchiseRepository.save(franchise)
+                            .flatMap(savedFranchise -> Mono.just(productNew));
                 });
     }
 

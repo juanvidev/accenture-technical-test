@@ -12,7 +12,7 @@ public class SubsidiaryUseCase {
 
     private final FranchiseRepository franchiseRepository;
 
-    public Mono<Franchise> saveSubsidiary(String idFromPath, Subsidiary subsidiary) {
+    public Mono<Subsidiary> saveSubsidiary(String idFromPath, Subsidiary subsidiary) {
         return franchiseRepository.findById(idFromPath)
                 .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found for the provided ID.")))
                 .flatMap(franchise -> {
@@ -32,12 +32,13 @@ public class SubsidiaryUseCase {
 
                     franchise.getSubsidiaries().add(newSubsidiary);
 
-                    return franchiseRepository.save(franchise);
+                    return franchiseRepository.save(franchise)
+                            .flatMap(savedFranchise -> Mono.just(newSubsidiary));
                 });
 
     }
 
-    public Mono<Franchise> updateSubsidiary(String idFranchise, String idSubsidiary, Subsidiary subsidiary) {
+    public Mono<Subsidiary> updateSubsidiary(String idFranchise, String idSubsidiary, Subsidiary subsidiary) {
         return franchiseRepository.findById(idFranchise)
                 .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found with the provided ID.")))
                 .flatMap(existingFranchise -> {
@@ -52,7 +53,8 @@ public class SubsidiaryUseCase {
 
                     existingSubsidiary.setName(subsidiary.getName());
 
-                    return franchiseRepository.save(existingFranchise);
+                    return franchiseRepository.save(existingFranchise)
+                            .flatMap(savedFranchise -> Mono.just(existingSubsidiary));
                 });
     }
 }

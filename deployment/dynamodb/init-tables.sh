@@ -1,12 +1,17 @@
 #!/bin/sh
 set -e
 
-echo "⏳ Waiting for DynamoDB..."
-until curl -s http://dynamodb-accenture:8000 > /dev/null; do
+echo "⏳ Esperando a DynamoDB Local..."
+
+until aws dynamodb list-tables \
+  --endpoint-url http://dynamodb-accenture:8000 \
+  --region us-east-1 > /dev/null 2>&1
+do
+  echo "DynamoDB aún no está listo, reintentando..."
   sleep 2
 done
 
-echo "✅ DynamoDB is up. Creating tables..."
+echo "✅ DynamoDB listo. Creando tabla franchises..."
 
 aws dynamodb create-table \
   --table-name franchises \
@@ -21,18 +26,16 @@ aws dynamodb create-table \
       "KeySchema": [
         { "AttributeName": "name", "KeyType": "HASH" }
       ],
-      "Projection": {
-        "ProjectionType": "ALL"
-      },
+      "Projection": { "ProjectionType": "ALL" },
       "ProvisionedThroughput": {
         "ReadCapacityUnits": 5,
         "WriteCapacityUnits": 5
       }
     }
   ]' \
-  --provisioned-throughput \
-    ReadCapacityUnits=5,WriteCapacityUnits=5 \
+  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
   --endpoint-url http://dynamodb-accenture:8000 \
-  --region us-east-1|| echo "⚠️ Table Franchise already exists"
+  --region us-east-1 \
+|| echo "⚠️ La tabla ya existe"
 
-echo "🎉 DynamoDB tables created"
+echo "🎉 Inicialización de DynamoDB completada"
