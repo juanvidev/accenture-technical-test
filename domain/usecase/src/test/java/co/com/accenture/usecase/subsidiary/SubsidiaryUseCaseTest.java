@@ -67,7 +67,7 @@ class SubsidiaryUseCaseTest {
                 .thenReturn(Mono.just(franchiseToTest));
 
         StepVerifier.create(subsidiaryUseCaseMock.saveSubsidiary(franchiseToTest.getId(), subsidiaryToTest))
-                .expectNext(franchiseToTest)
+                .expectNext(subsidiaryToTest)
                 .verifyComplete();
     }
 
