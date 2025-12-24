@@ -83,7 +83,7 @@ class ProductUseCaseTest {
         when(franchiseRepository.save(any(Franchise.class)))
                 .thenReturn(Mono.just(franchiseToTest));
 
-        StepVerifier.create(productUseCaseMock.saveProduct(franchiseToTest.getId(), subsidiaryToTest.getId(), productToTest))
+        StepVerifier.create(productUseCaseMock.saveProduct(franchiseToTest.getId(), subsidiaryToTest.getId(), productToTest).flatMap(p-> Mono.just(productToTest)))
                 .expectNext(productToTest)
                 .verifyComplete();
     }

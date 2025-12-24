@@ -37,8 +37,8 @@ public class Handler {
     public Mono<ServerResponse> listenSaveFranchise(ServerRequest serverRequest) {
 
         return serverRequest.bodyToMono(CreateFranchiseRequestDTO.class)
-                .map(franchiseMapper::toDomain)
                 .flatMap(validatorUtil::validate)
+                .map(franchiseMapper::toDomain)
                 .flatMap(franchiseUseCase::saveFranchise)
                 .doOnNext(entity -> System.out.println("[Handler] listenSaveFranchise  - Franchise saved: " + entity.getName()))
                 .flatMap(franchise -> ServerResponse.status(HttpStatus.CREATED)
