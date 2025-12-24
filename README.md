@@ -166,6 +166,9 @@ docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon
     --region us-east-1
 ```
 
+##Puertos
+Para el despliegue en docker el puerto de prueba una vez levantado todo el contenedor es http://localhost:8081/api/v1
+
 Resumen del esquema de la tabla `Franchises`:
 - Clave primaria: `id` (String).
 - Índice secundario: `franchise-name-index` (hash sobre `name`), proyección `ALL`.
