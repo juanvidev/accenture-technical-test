@@ -84,7 +84,7 @@ class ProductUseCaseTest {
                 .thenReturn(Mono.just(franchiseToTest));
 
         StepVerifier.create(productUseCaseMock.saveProduct(franchiseToTest.getId(), subsidiaryToTest.getId(), productToTest))
-                .expectNext(franchiseToTest)
+                .expectNext(productToTest)
                 .verifyComplete();
     }
 
