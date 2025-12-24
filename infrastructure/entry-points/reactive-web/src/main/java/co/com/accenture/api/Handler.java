@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -146,6 +147,25 @@ public class Handler {
                 .flatMap(user -> ServerResponse.status(HttpStatus.OK).build())
                 .doOnError(error -> System.err.println("[Handler] listenUpdateSubsidiary - Error: " + error.getMessage()))
                 .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateSubsidiary - Subsidiary updated: " + entity));
+    }
+
+    public Mono<ServerResponse> listenGetAllFranchises(ServerRequest serverRequest) {
+
+        return franchiseUseCase.getAllFranchises()
+                .map(franchiseMapper::toResponseList)
+                .collectList()
+                .flatMap(
+                        franchises -> ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(GenericResponse
+                                        .builder()
+                                        .success(true)
+                                        .data(franchises)
+                                        .timestamp(LocalDateTime.now())
+                                        .message("Franchises found")
+                                        .build()
+                                )
+                );
     }
 
 }

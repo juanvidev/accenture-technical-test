@@ -4,6 +4,7 @@ import co.com.accenture.model.exception.BusinessException;
 import co.com.accenture.model.franchise.Franchise;
 import co.com.accenture.model.franchise.gateways.FranchiseRepository;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
@@ -30,6 +31,13 @@ public class FranchiseUseCase {
                     existingFranchise.setName(franchise.getName());
                     return franchiseRepository.save(existingFranchise);
                 });
+
+    }
+
+    public Flux<Franchise> getAllFranchises() {
+        return franchiseRepository.findAll()
+                .collectList()
+                .flatMapMany(Flux::fromIterable);
 
     }
 }

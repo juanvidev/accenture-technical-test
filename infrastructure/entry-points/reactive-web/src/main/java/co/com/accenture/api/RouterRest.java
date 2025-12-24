@@ -56,8 +56,7 @@ public class RouterRest {
                 .path(Routes.FRANCHISE, builder -> builder
                         .POST("", franchiseHandler::listenSaveFranchise)
                         .POST("/{id}", franchiseHandler::listenUpdateFranchise)
-
-//                        .GET("", franchiseHandler::listenGetAllFranchises)
+                        .GET("", franchiseHandler::listenGetAllFranchises)
                 )
                 .path(Routes.SUBSIDIARY, builder -> builder
                         .POST("/{id}", franchiseHandler::listenSaveSubsidiary)

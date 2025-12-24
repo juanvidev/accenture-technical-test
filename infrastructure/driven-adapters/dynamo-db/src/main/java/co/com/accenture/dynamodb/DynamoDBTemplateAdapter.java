@@ -82,4 +82,13 @@ public class DynamoDBTemplateAdapter
                 .next();
     }
 
+    @Override
+    public Flux<Franchise> findAll() {
+        return Flux.from(table.scan().items())
+                .map(entity -> mapper.map(entity, Franchise.class));
+    }
+
+
+
+
 }
