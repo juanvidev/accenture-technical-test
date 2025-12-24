@@ -36,4 +36,23 @@ public class SubsidiaryUseCase {
                 });
 
     }
+
+    public Mono<Franchise> updateSubsidiary(String idFranchise, String idSubsidiary, Subsidiary subsidiary) {
+        return franchiseRepository.findById(idFranchise)
+                .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found with the provided ID.")))
+                .flatMap(existingFranchise -> {
+                    Subsidiary existingSubsidiary = existingFranchise.getSubsidiaries().stream()
+                            .filter(s -> s.getId().equals(idSubsidiary))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (existingSubsidiary == null) {
+                        return Mono.error(new BusinessException("BSS_004", "Subsidiary not found with the provided ID."));
+                    }
+
+                    existingSubsidiary.setName(subsidiary.getName());
+
+                    return franchiseRepository.save(existingFranchise);
+                });
+    }
 }

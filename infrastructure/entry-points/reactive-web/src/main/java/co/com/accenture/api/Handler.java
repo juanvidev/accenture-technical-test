@@ -118,4 +118,34 @@ public class Handler {
                 .doOnSuccess(entity -> System.out.println("[Handler] listenGetProductWithMostStock - Products with most stock found: " + entity));
 
     }
+
+    public Mono<ServerResponse> listenUpdateFranchise(ServerRequest serverRequest) {
+        String idFromPath = serverRequest.pathVariable("id");
+
+        return serverRequest.bodyToMono(CreateFranchiseRequestDTO.class)
+                .doOnNext(dto -> System.out.println("[Handler] listenUpdateFranchise - Received payload"))
+                .map(franchiseMapper::toDomain)
+                .flatMap(validatorUtil::validate)
+                .flatMap(franchise -> franchiseUseCase.updateFranchise(idFromPath, franchise))
+                .doOnNext(entity -> System.out.println("[Handler] listenUpdateFranchise  - Franchise updated: " + entity))
+                .flatMap(user -> ServerResponse.status(HttpStatus.OK).build())
+                .doOnError(error -> System.err.println("[Handler] listenUpdateFranchise - Error: " + error.getMessage()))
+                .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateFranchise - Franchise updated: " + entity));
+    }
+
+    public Mono<ServerResponse> listenUpdateSubsidiary(ServerRequest serverRequest) {
+        String idFranchisePath = serverRequest.pathVariable("franchiseId");
+        String idSubsidiaryPath = serverRequest.pathVariable("subsidiaryId");
+
+        return serverRequest.bodyToMono(CreateSubsidiaryRequestDTO.class)
+                .doOnNext(dto -> System.out.println("[Handler] listenUpdateSubsidiary - Received payload"))
+                .map(subsidiaryMapper::toDomain)
+                .flatMap(validatorUtil::validate)
+                .flatMap(subsidiary -> subsidiaryUseCase.updateSubsidiary(idFranchisePath, idSubsidiaryPath, subsidiary))
+                .doOnNext(entity -> System.out.println("[Handler] listenUpdateSubsidiary  - Subsidiary updated: " + entity))
+                .flatMap(user -> ServerResponse.status(HttpStatus.OK).build())
+                .doOnError(error -> System.err.println("[Handler] listenUpdateSubsidiary - Error: " + error.getMessage()))
+                .doOnSuccess(entity -> System.out.println("[Handler] listenUpdateSubsidiary - Subsidiary updated: " + entity));
+    }
+
 }

@@ -36,6 +36,18 @@ public class RouterRest {
                     beanClass = CreateSubsidiaryDocs.class,
                     beanMethod = "createSubsidiary"
             ),
+            @RouterOperation(
+                    path = "/api/v1/product/{franchiseId}/{subsidiaryId}/update-stock",
+                    method = RequestMethod.POST,
+                    beanClass = CreateSubsidiaryDocs.class,
+                    beanMethod = "updateProductStock"
+            ),
+            @RouterOperation(
+                    path = "/api/v1/product/mostStock/{id}",
+                    method = RequestMethod.GET,
+                    beanClass = CreateSubsidiaryDocs.class,
+                    beanMethod = "getProductWithMostStock"
+            )
 
     })
     public RouterFunction<ServerResponse> routerFunction(Handler franchiseHandler) {
@@ -43,10 +55,13 @@ public class RouterRest {
                 .route()
                 .path(Routes.FRANCHISE, builder -> builder
                         .POST("", franchiseHandler::listenSaveFranchise)
+                        .POST("/{id}", franchiseHandler::listenUpdateFranchise)
+
 //                        .GET("", franchiseHandler::listenGetAllFranchises)
                 )
                 .path(Routes.SUBSIDIARY, builder -> builder
                         .POST("/{id}", franchiseHandler::listenSaveSubsidiary)
+                        .POST("/{franchiseId}/{subsidiaryId}", franchiseHandler::listenUpdateSubsidiary)
                 )
                 .path(Routes.PRODUCT, builder -> builder
                         .POST("/{franchiseId}/{subsidiaryId}", franchiseHandler::listenSaveProduct)

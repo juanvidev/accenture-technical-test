@@ -22,4 +22,14 @@ public class FranchiseUseCase {
 
 
     }
+
+    public Mono<Franchise> updateFranchise(String idFranchise, Franchise franchise) {
+        return franchiseRepository.findById(idFranchise)
+                .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found with the provided ID.")))
+                .flatMap(existingFranchise -> {
+                    existingFranchise.setName(franchise.getName());
+                    return franchiseRepository.save(existingFranchise);
+                });
+
+    }
 }
