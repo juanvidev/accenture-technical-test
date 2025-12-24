@@ -1,6 +1,7 @@
 package co.com.accenture.api.mapper;
 
 import co.com.accenture.api.dto.request.CreateSubsidiaryRequestDTO;
+import co.com.accenture.api.dto.response.CreateSubsidiaryResponseDTO;
 import co.com.accenture.model.product.Product;
 import co.com.accenture.model.subsidary.Subsidiary;
 import org.mapstruct.Mapper;
@@ -16,6 +17,8 @@ public interface SubsidiaryMapper {
 
     @Mapping(target = "id", ignore = true)
     Subsidiary toDomain(CreateSubsidiaryRequestDTO createSubsidiaryRequestDTO);
+
+    CreateSubsidiaryResponseDTO toResponse(Subsidiary subsidiary);
 
     default List<Product> map(List<String> products) {
         if (products == null) {

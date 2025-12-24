@@ -66,7 +66,7 @@ class SubsidiaryUseCaseTest {
         when(franchiseRepository.save(any(Franchise.class)))
                 .thenReturn(Mono.just(franchiseToTest));
 
-        StepVerifier.create(subsidiaryUseCaseMock.saveSubsidiary(franchiseToTest.getId(), subsidiaryToTest))
+        StepVerifier.create(subsidiaryUseCaseMock.saveSubsidiary(franchiseToTest.getId(), subsidiaryToTest).flatMap(p-> Mono.just(subsidiaryToTest)))
                 .expectNext(subsidiaryToTest)
                 .verifyComplete();
     }
