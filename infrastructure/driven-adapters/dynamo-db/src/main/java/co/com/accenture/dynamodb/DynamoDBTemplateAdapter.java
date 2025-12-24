@@ -1,8 +1,6 @@
 package co.com.accenture.dynamodb;
 
 import co.com.accenture.dynamodb.entity.FranchiseEntity;
-import co.com.accenture.dynamodb.entity.ProductEntity;
-import co.com.accenture.dynamodb.entity.SubsidiaryEntity;
 import co.com.accenture.dynamodb.helper.TemplateAdapterOperations;
 import co.com.accenture.model.franchise.Franchise;
 import co.com.accenture.model.franchise.gateways.FranchiseRepository;
@@ -11,9 +9,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
-import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
@@ -77,5 +73,22 @@ public class DynamoDBTemplateAdapter
                 .flatMapMany(Flux::fromIterable)
                 .hasElements();
     }
+
+    @Override
+    public Mono<Franchise> findById(String id) {
+        QueryEnhancedRequest query = generateQueryExpression(id, null);
+        return query(query)
+                .flatMapMany(Flux::fromIterable)
+                .next();
+    }
+
+    @Override
+    public Flux<Franchise> findAll() {
+        return Flux.from(table.scan().items())
+                .map(entity -> mapper.map(entity, Franchise.class));
+    }
+
+
+
 
 }

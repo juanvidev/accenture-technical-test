@@ -1,0 +1,65 @@
+#version: "3.9"
+
+services:
+  franchises-ms:
+    build:
+      context: ../prueba-accenture
+      dockerfile: deployment/Dockerfile
+    container_name: franchises-ms
+    ports:
+      - "8081:8082"
+    environment:
+        - SPRING_PROFILES_ACTIVE=local
+        - SERVER_PORT=8082
+        - AWS_EC2_METADATA_DISABLED="true"
+        - AWS_ACCESS_KEY_ID=dummy
+        - AWS_SECRET_ACCESS_KEY=dummy
+        - AWS_DEFAULT_REGION=us-east-1
+        - AWS_DYNAMODB_ENDPOINT=http://dynamodb-accenture:8000
+        - AWS_WEB_IDENTITY_TOKEN_FILE=""
+    depends_on:
+        - dynamodb-accenture
+    networks:
+      - backend
+
+  dynamodb-accenture:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-accenture
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -inMemory -sharedDb"
+    environment:
+        - AWS_ACCESS_KEY_ID=dummy
+        - AWS_SECRET_ACCESS_KEY=dummy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://dynamodb-accenture:8000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+        - accenture_data:/data
+    networks:
+      - backend
+
+  dynamodb-init:
+    image: amazon/aws-cli:2.15.40
+    container_name: dynamodb-init
+    depends_on:
+      dynamodb-accenture:
+        condition: service_healthy
+    volumes:
+      - ./deployment/dynamodb/init-tables.sh:/init-tables.sh
+    entrypoint: ["sh", "/init-tables.sh"]
+    environment:
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+      AWS_DEFAULT_REGION: us-east-1
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  accenture_data:
+

@@ -93,4 +93,5 @@ public abstract class TemplateAdapterOperations<E, K, V> {
     protected E toModel(V data) {
         return data != null ? toEntityFn.apply(data) : null;
     }
+
 }

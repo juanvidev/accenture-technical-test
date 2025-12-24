@@ -1,6 +1,6 @@
 package co.com.accenture.api.dto.response;
 
-public record CreateFranchiseResponseDTO(
+public record CreateSubsidiaryResponseDTO(
     String id,
     String name
 ) {
