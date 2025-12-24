@@ -43,82 +43,7 @@ Desde la raíz del repositorio:
 
     ./gradlew clean
 
-Base de datos (DynamoDB local)
-------------------------------
-Esta prueba utiliza Amazon DynamoDB en modo local para facilitar las pruebas. Puedes arrancar una instancia local usando la imagen oficial `amazon/dynamodb-local` y luego crear la tabla `Franchises`.
 
-1) Ejecutar DynamoDB local con Docker:
-
-```bash
-# Descargar y ejecutar DynamoDB local en el puerto 8000
-docker run -d --name dynamodb-local -p 8000:8000 amazon/dynamodb-local
-```
-
-2) Crear la tabla `Franchises` (opción A: si tienes AWS CLI instalado en tu host):
-
-```bash
-aws dynamodb create-table \
-  --table-name franchises \
-  --attribute-definitions \
-    AttributeName=id,AttributeType=S \
-    AttributeName=name,AttributeType=S \
-  --key-schema \
-    AttributeName=id,KeyType=HASH \
-  --global-secondary-indexes '[
-    {
-      "IndexName": "franchise-name-index",
-      "KeySchema": [
-        { "AttributeName": "name", "KeyType": "HASH" }
-      ],
-      "Projection": {
-        "ProjectionType": "ALL"
-      },
-      "ProvisionedThroughput": {
-        "ReadCapacityUnits": 5,
-        "WriteCapacityUnits": 5
-      }
-    }
-  ]' \
-  --provisioned-throughput \
-    ReadCapacityUnits=5,WriteCapacityUnits=5 \
-  --endpoint-url http://localhost:8000 \
-  --region us-east-1
-```
-
-3) Crear la tabla `Franchises` (opción B: usando `amazon/aws-cli` en Docker, útil si no tienes AWS CLI local):
-
-```bash
-# En macOS, usamos host.docker.internal para que el contenedor aws-cli alcance el DynamoDB que corre en el host
-docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon/aws-cli \
-  dynamodb create-table \
-    --table-name franchises \
-    --attribute-definitions AttributeName=id,AttributeType=S \
-    --key-schema AttributeName=id,KeyType=HASH \
-      --global-secondary-indexes '[
-        {
-          "IndexName": "franchise-name-index",
-          "KeySchema": [
-            { "AttributeName": "name", "KeyType": "HASH" }
-          ],
-          "Projection": {
-            "ProjectionType": "ALL"
-          },
-          "ProvisionedThroughput": {
-            "ReadCapacityUnits": 5,
-            "WriteCapacityUnits": 5
-          }
-        }
-      ]' \    
-    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-    --endpoint-url http://host.docker.internal:8000 \
-    --region us-east-1
-```
-
-4) Verificar tablas existentes (AWS CLI local):
-
-```bash
-aws dynamodb list-tables --endpoint-url http://localhost:8000 --region us-east-1
-```
 ## Dockerización de la aplicación (Docker Compose)
 
 Se provee un ejemplo de `docker-compose.yml` para levantar DynamoDB en modo local y la aplicación. Guarda este archivo como `deployment/docker-compose.yml` (o ajústalo según tu estructura).
@@ -169,6 +94,12 @@ docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon
 ## Puertos
 
 Para el despliegue en docker el puerto de prueba una vez levantado todo el contenedor es http://localhost:8081/api/v1
+
+## Swagger Docs
+
+```
+URL para swagger http://localhost:8081/swagger-ui/index.html
+```
 
 Resumen del esquema de la tabla `Franchises`:
 - Clave primaria: `id` (String).
