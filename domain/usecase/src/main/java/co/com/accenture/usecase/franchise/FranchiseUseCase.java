@@ -35,9 +35,7 @@ public class FranchiseUseCase {
     }
 
     public Flux<Franchise> getAllFranchises() {
-        return franchiseRepository.findAll()
-                .collectList()
-                .flatMapMany(Flux::fromIterable);
+        return franchiseRepository.findAll();
 
     }
 }
