@@ -22,12 +22,4 @@ public class FranchiseUseCase {
 
 
     }
-
-    public Mono<Boolean> existsByName(String name) {
-        return franchiseRepository.existsByName(name)
-                .filter(Boolean::booleanValue)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Franchise not found with the provided name.")))
-                .thenReturn(true);
-
-    }
 }

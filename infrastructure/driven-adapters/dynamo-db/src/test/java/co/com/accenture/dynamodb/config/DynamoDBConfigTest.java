@@ -22,21 +22,19 @@ class DynamoDBConfigTest {
     private final DynamoDBConfig dynamoDBConfig = new DynamoDBConfig();
 
 
-//    @Test
-//    void testAmazonDynamoDBAsync() {
-//
-//        DynamoDbAsyncClient result = dynamoDBConfig.dynamoDbAsyncClientAws(
-//                publisher,
-//                "region");
-//
-//        assertNotNull(result);
-//    }
+    @Test
+    void testAmazonDynamoDBAsync() {
+
+        DynamoDbAsyncClient result = dynamoDBConfig.dynamoDbAsyncClientAws("region");
+
+        assertNotNull(result);
+    }
 
 
-//    @Test
-//    void testGetDynamoDbEnhancedAsyncClient() {
-//        DynamoDbEnhancedAsyncClient result = dynamoDBConfig.getDynamoDbEnhancedAsyncClient(dynamoDbAsyncClient);
-//
-//        assertNotNull(result);
-//    }
+    @Test
+    void testGetDynamoDbEnhancedAsyncClient() {
+        DynamoDbEnhancedAsyncClient result = dynamoDBConfig.dynamoDbEnhancedAsyncClient(dynamoDbAsyncClient);
+
+        assertNotNull(result);
+    }
 }

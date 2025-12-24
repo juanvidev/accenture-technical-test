@@ -18,7 +18,6 @@ public class ProductUseCase {
 
     public Mono<Franchise> saveProduct(String idFranchise, String idSubsidiary, Product product) {
         return franchiseRepository.findById(idFranchise)
-                .flatMap(franchise -> franchiseRepository.findById(idFranchise))
                 .switchIfEmpty(Mono.error(new BusinessException("BSS_002", "Franchise not found for the provided ID.")))
                 .flatMap(franchise -> {
                     var subsidiaryOpt = franchise.getSubsidiaries().stream()

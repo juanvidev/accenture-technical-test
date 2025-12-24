@@ -1,28 +1,23 @@
 package co.com.accenture.config;
 
+import co.com.accenture.model.franchise.gateways.FranchiseRepository;
+import co.com.accenture.usecase.franchise.FranchiseUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 class UseCasesConfigTest {
 
     @Test
-    void testUseCaseBeansExist() {
+    void testFranchiseUseCaseTest() {
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TestConfig.class)) {
-            String[] beanNames = context.getBeanDefinitionNames();
+            assertNotNull(context.getBean(FranchiseUseCase.class), "Franchise bean should be loaded in the context");
 
-            boolean useCaseBeanFound = false;
-            for (String beanName : beanNames) {
-                if (beanName.endsWith("UseCase")) {
-                    useCaseBeanFound = true;
-                    break;
-                }
-            }
-
-            assertTrue(useCaseBeanFound, "No beans ending with 'Use Case' were found");
         }
     }
 
@@ -31,14 +26,9 @@ class UseCasesConfigTest {
     static class TestConfig {
 
         @Bean
-        public MyUseCase myUseCase() {
-            return new MyUseCase();
+        FranchiseRepository franchiseRepository() {
+            return mock(FranchiseRepository.class);
         }
     }
 
-    static class MyUseCase {
-        public String execute() {
-            return "MyUseCase Test";
-        }
-    }
 }
