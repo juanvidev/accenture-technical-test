@@ -43,16 +43,6 @@ Desde la raíz del repositorio:
 
     ./gradlew clean
 
-- Construir imagen Docker:
-
-    docker build -f deployment/Dockerfile -t prueba-accenture:latest .
-
-Notas de ejecución
-------------------
-- Para trabajar en el módulo `app-service` puedes ejecutar desde la raíz con un task por path, por ejemplo:
-
-    ./gradlew :applications:app-service:build
-
 Base de datos (DynamoDB local)
 ------------------------------
 Esta prueba utiliza Amazon DynamoDB en modo local para facilitar las pruebas. Puedes arrancar una instancia local usando la imagen oficial `amazon/dynamodb-local` y luego crear la tabla `Franchises`.
@@ -129,10 +119,72 @@ docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon
 ```bash
 aws dynamodb list-tables --endpoint-url http://localhost:8000 --region us-east-1
 ```
+## Dockerización de la aplicación (Docker Compose)
 
-Notas sobre el esquema de la tabla `Franchises`:
+Se provee un ejemplo de `docker-compose.yml` para levantar DynamoDB en modo local y la aplicación. Guarda este archivo como `deployment/docker-compose.yml` (o ajústalo según tu estructura).
+
+
+
+Arrancar con docker compose (desde la raíz del repositorio):
+
+```bash
+# Construir imágenes (si es necesario) y levantar servicios en primer plano
+docker compose up --build
+```
+
+Notas importantes:
+- En macOS el servicio `app` puede alcanzar DynamoDB usando `http://dynamodb:8000` dentro de la red del compose. Si ejecutas comandos desde el host y necesitas acceder a DynamoDB, usa `http://localhost:8000`.
+- Ajusta el puerto `8080` u otras variables según lo requiera tu proyecto.
+
+Crear la tabla `Franchises` (opciones si el .sh no funciona):
+
+Opción A — desde el host con AWS CLI instalado (usa localhost):
+
+```bash
+aws dynamodb create-table \
+  --table-name franchises \
+  --attribute-definitions AttributeName=id,AttributeType=S AttributeName=name,AttributeType=S \
+  --key-schema AttributeName=id,KeyType=HASH \
+  --global-secondary-indexes '[{"IndexName":"franchise-name-index","KeySchema":[{"AttributeName":"name","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":5,"WriteCapacityUnits":5}}]' \
+  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+  --endpoint-url http://localhost:8000 \
+  --region us-east-1
+```
+
+Opción B — usando `amazon/aws-cli` en Docker (útil si no tienes AWS CLI local):
+
+```bash
+# En macOS usa host.docker.internal para que el contenedor aws-cli alcance DynamoDB que corre en el host
+docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon/aws-cli \
+  dynamodb create-table \
+    --table-name franchises \
+    --attribute-definitions AttributeName=id,AttributeType=S AttributeName=name,AttributeType=S \
+    --key-schema AttributeName=id,KeyType=HASH \
+    --global-secondary-indexes '[{"IndexName":"franchise-name-index","KeySchema":[{"AttributeName":"name","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":5,"WriteCapacityUnits":5}}]' \
+    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+    --endpoint-url http://host.docker.internal:8000 \
+    --region us-east-1
+```
+
+Resumen del esquema de la tabla `Franchises`:
 - Clave primaria: `id` (String).
-- Ajusta atributos y throughput según las necesidades del ejercicio. Para pruebas locales, los valores provisionales son suficientes.
+- Índice secundario: `franchise-name-index` (hash sobre `name`), proyección `ALL`.
+
+Test unitarios
+-----------------------------------
+
+Se incluyen tests unitarios para el domain. Los tests están ubicados en los módulos correspondientes bajo `src/test/java`.
+Para ejecutar los tests, usa el comando:
+
+    ./gradlew test
+y para un reporte con Jacoco usa el comando:
+
+    ./gradlew test jacocoTestReport
+
+Postman
+-----------------------------------
+Para facilitar las pruebas de los endpoints, se anexa el URL de una colección de Postman que puedes importar en tu entorno de Postman:
+[Postman Collection - Accenture Technical Test](https://documenter.getpostman.com/view/14774609/2sBXVZoEKT)
 
 Criterios de evaluación (sugeridos)
 -----------------------------------
@@ -141,4 +193,3 @@ Criterios de evaluación (sugeridos)
 3. Código legible, bien estructurado y con principios SOLID.
 4. Capacidad de ejecutar build y tests con `./gradlew` sin errores.
 5. Documentación mínima en README y comentarios importantes.
-
