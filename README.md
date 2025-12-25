@@ -25,32 +25,56 @@ Requisitos
 ---------
 - JDK 21.
 - Gradle wrapper incluido: usa `./gradlew`.
-- Docker para construir imagen y levantar contenedor.
+- Docker para construir imagenes y levantar contenedores.
+- AWSCli para creacion de tablas
 
 Comandos básicos
 ----------------
 Desde la raíz del repositorio:
 
 - Compilar todo:
-
-    ./gradlew build
-
+```
+./gradlew build
+```
 - Ejecutar tests:
-
-    ./gradlew test
-
+```
+./gradlew test
+```
 - Limpiar artefactos:
+```
+./gradlew clean
+```
+## Ejecución local
 
-    ./gradlew clean
+Iniciar la base de datos DynamoDB con Imagen Docker
+```
+docker run --name accenturedb  -p 8000:8000 amazon/dynamodb-local
+```
 
+Se debe crear la tabla con el comando
+```
+aws dynamodb create-table \
+  --table-name franchises \
+  --attribute-definitions AttributeName=id,AttributeType=S AttributeName=name,AttributeType=S \
+  --key-schema AttributeName=id,KeyType=HASH \
+  --global-secondary-indexes '[{"IndexName":"franchise-name-index","KeySchema":[{"AttributeName":"name","KeyType":"HASH"}],"Projection":{"ProjectionType":"ALL"},"ProvisionedThroughput":{"ReadCapacityUnits":5,"WriteCapacityUnits":5}}]' \
+  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+  --endpoint-url http://localhost:8000 \
+  --region us-east-1
+```
 
-## Docker
+Probar con la URL
+```
+http://localhost:8080/api/v1
+```
+
+## Ejecución con Docker
 
 En el archivo `docker-compose.yml` esta la configuración para levantar la aplicación en modo Local.
 
 Desde la raíz del repositorio ejecutar el siguiente comando para construir la imagen y levantas el contenedor:
 
-```bash
+```
 # Construir imágenes (si es necesario) y levantar servicios en primer plano
 docker compose up --build
 ```
@@ -94,14 +118,20 @@ Resumen del esquema de la tabla `Franchises`:
 
 ## Swagger Docs
 
+URL para documentación Swagger con docker
 ```
-URL para swagger http://localhost:8081/swagger-ui/index.html
+http://localhost:8081/swagger-ui/index.html
 ```
+Sin docker
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
 
 Test unitarios
 -----------------------------------
 
-Se incluyen tests unitarios para el domain. Los tests están ubicados en los módulos correspondientes bajo `src/test/java`.
+Se incluyen tests unitarios para el domain. Los tests están ubicados en los subprojectos correspondientes bajo `src/test/java`.
 Para ejecutar los tests, usa el comando:
 
     ./gradlew test
