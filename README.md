@@ -23,9 +23,9 @@ Estructura principal (mapeo a hexagonal)
 
 Requisitos
 ---------
-- JDK 11+ (o la versión que requiera el proyecto).
+- JDK 21.
 - Gradle wrapper incluido: usa `./gradlew`.
-- Docker (opcional) para construir y probar imagenes.
+- Docker para construir imagen y levantar contenedor.
 
 Comandos básicos
 ----------------
