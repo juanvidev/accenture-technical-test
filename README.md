@@ -2,22 +2,22 @@
 
 Resumen
 -------
-Proyecto creado como prueba técnica para Accenture. Está diseñado siguiendo la arquitectura limpia (ports & adapters) 
+Proyecto creado como prueba técnica para Accenture. Está diseñado siguiendo la arquitectura limpia/hexagonal (ports & adapters) 
 para mostrar la separación clara entre dominio, lógica de aplicación y detalles de infraestructura, basado en el [plugin](https://bancolombia.github.io/scaffold-clean-architecture/docs/intro) 
 de Bancolombia.
 
 Arquitectura Limpia (Hexagonal)
 ------------------------
-- Domain: entidad y reglas de negocio puras. No depende de frameworks ni de I/O.
-- Application (o Service): casos de uso que orquestan el dominio.
-- Ports (puertos): interfaces que define el dominio/aplicación para acceder a recursos externos (repositorios, mensajería, etc.).
-- Adapters (adaptadores / Infrastructure): implementaciones concretas de los puertos (BD, HTTP, files, drivers).
+- Domain: Casos de uso, entidad y reglas de negocio puras. No depende de frameworks ni de I/O.
+- Application (o Service): Orquestacion.
+- Ports (puertos): interfaces que define el dominio para acceder a recursos externos (repositorios, mensajería, etc.).
+- Adapters (adaptadores / Infraestructure): implementaciones concretas de los puertos (BD, HTTP, files, drivers).
 
 Estructura principal (mapeo a hexagonal)
 ----------------------------------------
-- `domain/` — Modelos de dominio y lógica core (puertos, entidades, value objects).
-- `applications/app-service/` — Casos de uso y orquestación de la aplicación.
-- `infrastructure/` — Implementaciones concretas de repositorios/adapters.
+- `domain/` — Modelos de dominio, casos de uso y lógica core (entidades, value objects, use case).
+- `applications/app-service/` — Orquestación de la aplicación.
+- `infrastructure/` —  Implementaciones concretas de repositorios/adapters.
 - `deployment/` — Dockerfile y recursos para desplegar la aplicación.
 - `gradle/`, `build/`, `build-cache/` — Configuración y artefactos de build.
 
