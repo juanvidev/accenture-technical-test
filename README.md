@@ -44,13 +44,11 @@ Desde la raíz del repositorio:
     ./gradlew clean
 
 
-## Dockerización de la aplicación (Docker Compose)
+## Docker
 
-Se provee un ejemplo de `docker-compose.yml` para levantar DynamoDB en modo local y la aplicación. Guarda este archivo como `deployment/docker-compose.yml` (o ajústalo según tu estructura).
+En el archivo `docker-compose.yml` esta la configuración para levantar la aplicación en modo Local.
 
-
-
-Arrancar con docker compose (desde la raíz del repositorio):
+Desde la raíz del repositorio ejecutar el siguiente comando para construir la imagen y levantas el contenedor:
 
 ```bash
 # Construir imágenes (si es necesario) y levantar servicios en primer plano
