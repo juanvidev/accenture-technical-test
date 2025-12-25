@@ -88,16 +88,15 @@ docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon
     --endpoint-url http://host.docker.internal:8000 \
     --region us-east-1
 ```
+Resumen del esquema de la tabla `Franchises`:
+- Clave primaria: `id` (String).
+- Índice secundario: `franchise-name-index` (hash sobre `name`), proyección `ALL`.
 
 ## Swagger Docs
 
 ```
 URL para swagger http://localhost:8081/swagger-ui/index.html
 ```
-
-Resumen del esquema de la tabla `Franchises`:
-- Clave primaria: `id` (String).
-- Índice secundario: `franchise-name-index` (hash sobre `name`), proyección `ALL`.
 
 Test unitarios
 -----------------------------------
