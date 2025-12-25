@@ -55,9 +55,7 @@ Desde la raíz del repositorio ejecutar el siguiente comando para construir la i
 docker compose up --build
 ```
 
-Notas importantes:
-- En macOS el servicio `app` puede alcanzar DynamoDB usando `http://dynamodb:8000` dentro de la red del compose. Si ejecutas comandos desde el host y necesitas acceder a DynamoDB, usa `http://localhost:8000`.
-- Ajusta el puerto `8080` u otras variables según lo requiera tu proyecto.
+Una vez desplegado el contenedor la url para pruebas es http://localhost:8081/api/v1
 
 Crear la tabla `Franchises` (opciones si el .sh no funciona):
 
@@ -88,10 +86,6 @@ docker run --rm -e AWS_ACCESS_KEY_ID=dummy -e AWS_SECRET_ACCESS_KEY=dummy amazon
     --endpoint-url http://host.docker.internal:8000 \
     --region us-east-1
 ```
-
-## Puertos
-
-Para el despliegue en docker el puerto de prueba una vez levantado todo el contenedor es http://localhost:8081/api/v1
 
 ## Swagger Docs
 
