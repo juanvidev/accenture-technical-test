@@ -2,11 +2,11 @@
 
 Resumen
 -------
-Proyecto creado como prueba técnica para Accenture. Está diseñado siguiendo la arquitectura hexagonal (ports & adapters) 
+Proyecto creado como prueba técnica para Accenture. Está diseñado siguiendo la arquitectura limpia (ports & adapters) 
 para mostrar la separación clara entre dominio, lógica de aplicación y detalles de infraestructura, basado en el [plugin](https://bancolombia.github.io/scaffold-clean-architecture/docs/intro) 
 de Bancolombia.
 
-Arquitectura (Hexagonal)
+Arquitectura Limpia (Hexagonal)
 ------------------------
 - Domain: entidad y reglas de negocio puras. No depende de frameworks ni de I/O.
 - Application (o Service): casos de uso que orquestan el dominio.
