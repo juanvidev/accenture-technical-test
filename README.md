@@ -57,7 +57,9 @@ docker compose up --build
 
 Una vez desplegado el contenedor la url para pruebas es http://localhost:8081/api/v1
 
-Crear la tabla `Franchises` (opciones si el .sh no funciona):
+### (Opcional) Crear la tabla `Franchises`
+
+Ejecutar solo en caso de que el archivo init-tables.sh no se haya ejecutado al levantar el contenedor:
 
 Opción A — desde el host con AWS CLI instalado (usa localhost):
 
@@ -113,10 +115,3 @@ Postman
 Para facilitar las pruebas de los endpoints, se anexa el URL de una colección de Postman que puedes importar en tu entorno de Postman:
 [Postman Collection - Accenture Technical Test](https://documenter.getpostman.com/view/14774609/2sBXVZoEKT)
 
-Criterios de evaluación (sugeridos)
------------------------------------
-1. Separación clara entre dominio y detalles de infraestructura (puertos vs adaptadores).
-2. Cobertura mínima de tests para casos de uso críticos.
-3. Código legible, bien estructurado y con principios SOLID.
-4. Capacidad de ejecutar build y tests con `./gradlew` sin errores.
-5. Documentación mínima en README y comentarios importantes.
