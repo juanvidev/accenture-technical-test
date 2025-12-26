@@ -51,7 +51,7 @@ Iniciar la base de datos DynamoDB con Imagen Docker
 docker run --name accenturedb  -p 8000:8000 amazon/dynamodb-local
 ```
 
-Se debe crear la tabla con el comando
+- Se debe crear la tabla con el comando
 ```
 aws dynamodb create-table \
   --table-name franchises \
@@ -62,8 +62,12 @@ aws dynamodb create-table \
   --endpoint-url http://localhost:8000 \
   --region us-east-1
 ```
+- Ejecutar proyecto:
+```
+./gradlew bootRun
+```
 
-Probar con la URL
+= Probar con la URL
 ```
 http://localhost:8080/api/v1
 ```
